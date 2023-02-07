@@ -1,25 +1,26 @@
 #include "stack.h"
 #include "linked_list.h"
 #include <stdlib.h>
+#include "utils.h"
 
 SequentialStack *createSequentialStack() {
   SequentialStack *stack = (SequentialStack *)malloc(sizeof(SequentialStack));
   if (stack == NULL) {
-    // ERR
+    panic("Could not allocate sequential stack");
   }
   stack->top = -1;
   return stack;
 }
 
-int push(SequentialStack *stack, int val) { 
+Result push(SequentialStack *stack, int val) { 
   if (stack->top >= MAXSTACKSIZE - 1) return ERR;
   stack->items[++stack->top] = val;
   return OK;
 }
-int pop(SequentialStack *stack) {
+Result pop(SequentialStack *stack) {
   return pop(stack, NULL);
 }
-int pop(SequentialStack *stack, int *val) { 
+Result pop(SequentialStack *stack, int *val) { 
   if (stack->top < 0) return ERR;
   if(val != NULL) {
     *val = stack->items[stack->top];
@@ -35,7 +36,7 @@ void free(SequentialStack *stack) {
 LinkedStack *createLinkedStack() {
   LinkedStack *stack = (LinkedStack *)malloc(sizeof(LinkedStack));
   if (stack == NULL) {
-    // ERR
+    panic("Could not allocate linked stack");
   }
   stack->list = (createLinkedList());
   return stack;
@@ -45,7 +46,7 @@ void push(LinkedStack *stack, int val) {
   insert_head(stack->list, val);
 }
 
-int pop(LinkedStack *stack, int *val) {
+Result pop(LinkedStack *stack, int *val) {
   return remove_head(stack->list, val);
 }
 

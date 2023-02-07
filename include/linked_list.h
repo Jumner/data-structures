@@ -15,10 +15,10 @@ Node *createNode(int val);
 LinkedList *createLinkedList();
 LinkedList *createLinkedList(int *array, int size);
 
-int insert_head(LinkedList *l, int val);
-int insert_tail(LinkedList *l, int val);
-int insert_at(LinkedList *l, int search, int val);
-int remove_head(LinkedList *l, int *val);
-int remove_tail(LinkedList *l, int *val);
-int remove_at(LinkedList *l, int search, int *val);
+Result insert_head(LinkedList *l, int val);
+Result insert_tail(LinkedList *l, int val);
+Result insert_at(LinkedList *l, int search, int val);
+Result remove_head(LinkedList *l, int *val);
+Result remove_tail(LinkedList *l, int *val);
+Result remove_at(LinkedList *l, int search, int *val);
 void free(LinkedList *l);

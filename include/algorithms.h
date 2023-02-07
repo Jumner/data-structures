@@ -2,6 +2,7 @@
 
 #include "utils.h"
 #include "linked_list.h"
+#define VERBOSE false
 // Searching
 
 // Linear search

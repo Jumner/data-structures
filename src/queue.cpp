@@ -6,7 +6,7 @@
 SequentialQueue *createSequentialQueue() {
   SequentialQueue *queue = (SequentialQueue *)malloc(sizeof(SequentialQueue));
   if (queue == NULL) {
-    // ERR
+    panic("Could not allocate sequential queue");
   }
   queue->back = -1;
   queue->front = -1;
@@ -14,7 +14,7 @@ SequentialQueue *createSequentialQueue() {
   return queue;
 }
 
-int push_back(SequentialQueue *queue, int val) {
+Result push_back(SequentialQueue *queue, int val) {
   if (queue->count == MAXSTACKSIZE) return ERR;
   queue->back = ++queue->back % MAXSTACKSIZE;
   queue->list[queue->back] = val;
@@ -25,7 +25,7 @@ int push_back(SequentialQueue *queue, int val) {
   return OK;
 }
 
-int pop_front(SequentialQueue *queue, int *val) {
+Result pop_front(SequentialQueue *queue, int *val) {
   if(queue->count <= 0) return ERR;
   *val = queue->list[queue->front];
   queue->front = ++queue->front % MAXSTACKSIZE;
@@ -44,15 +44,15 @@ void free(SequentialQueue *queue) {
 LinkedQueue *createLinkedQueue() {
   LinkedQueue *queue = (LinkedQueue *)malloc(sizeof(LinkedQueue));
   if (queue == NULL) {
-    // ERR
+    panic("Could not allocate linked queue");
   }
   queue->list = (createLinkedList());
   return queue;
 }
-int push_back(LinkedQueue *queue, int val) {
+Result push_back(LinkedQueue *queue, int val) {
   return insert_tail(queue->list, val);
 }
-int pop_front(LinkedQueue *queue, int *val) {
+Result pop_front(LinkedQueue *queue, int *val) {
   return remove_head(queue->list, val);
 }
 int *peek_front(LinkedQueue *queue) {

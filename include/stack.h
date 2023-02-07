@@ -7,9 +7,9 @@ typedef struct {
 } SequentialStack;
 
 SequentialStack *createSequentialStack();
-int push(SequentialStack *stack, int val);
-int pop(SequentialStack *stack);
-int pop(SequentialStack *stack, int *val);
+Result push(SequentialStack *stack, int val);
+Result pop(SequentialStack *stack);
+Result pop(SequentialStack *stack, int *val);
 int *peek(SequentialStack *stack); // Top of stack
 void free(SequentialStack *stack);
 
@@ -19,6 +19,6 @@ typedef struct {
 
 LinkedStack *createLinkedStack();
 void push(LinkedStack *stack, int val);
-int pop(LinkedStack *stack, int *val);
+Result pop(LinkedStack *stack, int *val);
 int *peek(LinkedStack *stack); // Top of stack
 void free(LinkedStack *stack);

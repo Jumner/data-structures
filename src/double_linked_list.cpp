@@ -1,10 +1,11 @@
 #include "double_linked_list.h"
+#include "utils.h"
 #include <stdlib.h>
 
 DNode *createDNode(int val) {
   DNode *p_new = (DNode *)malloc(sizeof(DNode));
   if (p_new == NULL) {
-    // ERR
+    panic("Could not allocate DNode");
   }
   p_new->val = val;
   p_new->next = NULL;
@@ -16,7 +17,7 @@ DoubleLinkedList *createDoubleLinkedList() {
   DoubleLinkedList *l_new =
       (DoubleLinkedList *)malloc(sizeof(DoubleLinkedList));
   if (l_new == NULL) {
-    // ERR
+    panic("Could not allocate double linked list");
   }
   l_new->head = NULL;
   l_new->tail = NULL;
@@ -54,7 +55,7 @@ void fix_prev(DoubleLinkedList *l) {
   }
 }
 
-int insert_head(DoubleLinkedList *l, int val) {
+Result insert_head(DoubleLinkedList *l, int val) {
   DNode *p_temp = createDNode(val);
   p_temp->next = l->head;
   if (p_temp->next != NULL) {
@@ -66,7 +67,7 @@ int insert_head(DoubleLinkedList *l, int val) {
   return OK;
 }
 
-int insert_tail(DoubleLinkedList *l, int val) {
+Result insert_tail(DoubleLinkedList *l, int val) {
   DNode *p_temp = createDNode(val);
   p_temp->prev = l->tail;
   if (p_temp->prev != NULL) {
@@ -78,7 +79,7 @@ int insert_tail(DoubleLinkedList *l, int val) {
   return OK;
 }
 
-int insert_at(DoubleLinkedList *l, int search, int val) {
+Result insert_at(DoubleLinkedList *l, int search, int val) {
   DNode *p_temp = l->head;
   while (p_temp != NULL && p_temp->val != search) {
     p_temp = p_temp->next;
@@ -98,7 +99,7 @@ int insert_at(DoubleLinkedList *l, int search, int val) {
   return OK;
 }
 
-int remove_head(DoubleLinkedList *l, int *val) {
+Result remove_head(DoubleLinkedList *l, int *val) {
   DNode *r_node = l->head;
   if (r_node == NULL)
     return ERR;
@@ -114,7 +115,7 @@ int remove_head(DoubleLinkedList *l, int *val) {
   return OK;
 }
 
-int remove_tail(DoubleLinkedList *l, int *val) {
+Result remove_tail(DoubleLinkedList *l, int *val) {
   DNode *r_node = l->tail;
   if (r_node == NULL)
     return ERR;
@@ -130,7 +131,7 @@ int remove_tail(DoubleLinkedList *l, int *val) {
   return OK;
 }
 
-int remove_at(DoubleLinkedList *l, int search, int *val) {
+Result remove_at(DoubleLinkedList *l, int search, int *val) {
   DNode *p_temp = l->head;
 
   while (p_temp != NULL && p_temp->val != search) {

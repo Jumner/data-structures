@@ -5,8 +5,6 @@
 
 #include "algorithms.h"
 
-#define VERBOSE false
-
 int arrayCompares=0; // How tf does this work I hate it here
 int linkedCompares=0;
 
