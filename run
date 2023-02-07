@@ -1,0 +1,1 @@
+gcc -g src/*.cpp -Iinclude -o main && ./main
