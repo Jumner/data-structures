@@ -1,3 +1,4 @@
+#pragma once
 #include "linked_list.h"
 #include "utils.h"
 

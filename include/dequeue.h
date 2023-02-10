@@ -1,3 +1,4 @@
+#pragma once
 #include "utils.h"
 #include "double_linked_list.h"
 

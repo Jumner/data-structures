@@ -7,6 +7,7 @@
 #include "stack.h"
 #include "queue.h"
 #include "dequeue.h"
+#include "trees.h"
 #include "algorithms.h"
 // Tests
 Result linkedListBinarySearchTest() {
@@ -246,6 +247,47 @@ Result dequeueTest() {
 	return OK;
 }
 
+Result binaryTreeTest() {
+	printf("Binary tree === PASS\n");
+	bTree *tree = createBTree();
+	addNode(tree, 28);
+	addNode(tree, 28, 15);
+	addNode(tree, 15, 4);
+	addNode(tree, 4, 3);
+	addNode(tree, 4, 12);
+	bTreeNode *node;
+	find(tree, 12, &node);
+	node->right = createBTreeNode(14);
+	addNode(tree, 15, 25);
+	addNode(tree, 25, 20);
+	find(tree, 20, &node);
+	node->right = createBTreeNode(23);
+	addNode(tree, 28, 37);
+	addNode(tree, 37, 32);
+	addNode(tree, 32, 30);
+	addNode(tree, 32, 34);
+	addNode(tree, 37, 46);
+	if (VERBOSE) printTree(tree);
+	if (VERBOSE) printTree(tree, PRE_ORDER);
+	if (VERBOSE) printTree(tree, POST_ORDER);
+	if(find(tree, 69, &node) == OK) return ERR;
+	if(find(tree,37, &node) == ERR) return ERR;
+	bTreeNode *node2;
+	if(findParent(tree,46, &node2) == ERR) return ERR;
+	if(node2 != node) return ERR;
+	if(find(tree, 23, &node) == ERR) return ERR;
+	if(depth(tree, node) != 4) return ERR;
+	if(treeHeight(tree) != 4) return ERR;
+	if (treeSum(tree) != 323) return ERR;
+	bTreePath path = traverseTree(tree);
+	for(int i = 0; i < path.size; i ++) {
+		path.list[i]->val++;
+	}
+	if (VERBOSE) printTree(tree, POST_ORDER);
+	free(tree);
+	return OK;
+}
+
 Result fullTest() {
 	printf("Running test suite\n-==-===-!==-===-==-\n\n");
 	if (linkedListTest() == ERR) return ERR;
@@ -257,5 +299,7 @@ Result fullTest() {
 	if (queueTest() == ERR) return ERR;
 	printf("\n");
 	if (dequeueTest() == ERR) return ERR;
+	printf("\n");
+	if (binaryTreeTest() == ERR) return ERR;
 	return OK;
 }

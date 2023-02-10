@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "utils.h"
 #include "linked_list.h"
+#include "trees.h"
 
 #include "algorithms.h"
 
@@ -74,4 +75,13 @@ int *binarySearch(int *list, int size, int val) {
     // Note, the code here end = mid-1, in the other one it stops one early so they're equivilent
   }
   return NULL;
+}
+
+int treeSum(bTree *tree) {
+  int sum = 0;
+  bTreePath path = traverseTree(tree);
+  for(int i = 0; i < path.size; i ++) {
+    sum += path.list[i]->val;
+  }
+  return sum;
 }

@@ -12,4 +12,6 @@ Result sequentialQueueTest();
 Result linkedQueueTest();
 Result queueTest();
 Result dequeueTest();
+Result binaryTreeTest();
+
 Result fullTest();
