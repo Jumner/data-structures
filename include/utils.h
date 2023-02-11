@@ -2,6 +2,6 @@
 
 typedef enum { ERR, OK } Result;
 #define MAXSTACKSIZE 100
-#define VERBOSE false
+#define VERBOSE true
 
 void panic(const char *message);

@@ -37,11 +37,11 @@ bool isFull(bTreeNode *node);
 Result find(bTree *tree, int val, bTreeNode **pNode); // Return node by ref
 Result find(bTreeNode *root, int val, bTreeNode **pNode);
 Result findParent(bTree *tree, int val, bTreeNode **pNode); // Return parent node
-Result addNode(bTree *tree, int search, int val); // Add node as child of search node
-Result addNode(bTree *tree, int val); // Insert root
-Result addNode(bTreeNode *root, int val);
-Result insertNode(bTree *tree, int search, bTreeNode *node); // Insert a node as a child of search node
+Result addNode(bTree *tree, int val); // Insert into tree
+Result addNode(bTreeNode *root, int val); // Insert into tree
+Result insertNode(bTreeNode *root, bTreeNode *node);
 Result deleteNode(bTree *tree, int search);  // Delete a node
+Result withdrawNode(bTreeNode *root, int search, bTreeNode **pNode);
 Result withdrawNode(bTree *tree, int search, bTreeNode **pNode); // Pass pointer by reference
 int depth(bTree *tree, bTreeNode *node);
 int depth(bTreeNode *root, bTreeNode *node);

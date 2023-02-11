@@ -81,16 +81,16 @@ Result find(bTree *tree, int val, bTreeNode **pNode) {
   return find(tree->root, val, pNode);
 }
 
-Result find(bTreeNode *root, int val, bTreeNode **pNode) { // Uses pre-order
-  if(root == NULL) return ERR; // I will not be caught lacking
-  if (root->val == val) { // Root is it
+Result find(bTreeNode *root, int val, bTreeNode **pNode) {
+  if (root == NULL) return ERR;
+  if(val == root->val) {
     *pNode = root;
     return OK;
+  } else if (val > root->val) {
+    return find(root->right, val, pNode);
+  } else {
+    return find(root->left, val, pNode);
   }
-  // Check left then right
-  if(find(root->left,  val, pNode) == OK) return OK;
-  if(find(root->right, val, pNode) == OK) return OK;
-  return ERR; // None found, err
 }
 
 Result findParent(bTree *tree, int val, bTreeNode **pNode) {
@@ -101,41 +101,53 @@ Result findParent(bTree *tree, int val, bTreeNode **pNode) {
   return OK;
 }
 
-Result addNode(bTree *tree, int search, int val) {
-  bTreeNode *node;
-  if(find(tree, search, &node) == ERR) return ERR;
-  return addNode(node, val);
-}
-
 Result addNode(bTree *tree, int val) {
-  if(tree->root != NULL) return ERR;
-  bTreeNode *node = createBTreeNode(val);
-  tree->root = node;
-  return OK;
+  if (tree->root == NULL) {
+    tree->root = createBTreeNode(val);
+    return OK;
+  }
+  return addNode(tree->root, val);
 }
 
 Result addNode(bTreeNode *root, int val) {
-  if(root->left == NULL) {
-    bTreeNode *newNode = createBTreeNode(val);
-    root->left = newNode;
-    newNode->parent = root;
-    return OK;
-  } else if (root->right == NULL) {
-    bTreeNode *newNode = createBTreeNode(val);
-    root->right = newNode;
-    newNode->parent = root;
-    return OK;
+  if(root == NULL) return ERR;
+  if(val > root->val) {
+    if(root->right == NULL) {
+      root->right = createBTreeNode(val);
+      root->right->parent = root;
+      return OK;
+    }
+    return addNode(root->right, val);
+  } else if(val < root->val) {
+    if(root->left == NULL) {
+      root->left = createBTreeNode(val);
+      root->left->parent = root;
+      return OK;
+    }
+    return addNode(root->left, val);
   }
-  return ERR; // Full
+  return ERR; // Already in tree
 }
 
-Result insertNode(bTree *tree, int search, bTreeNode *newNode) {
-  bTreeNode *root;
-  if(find(tree, search, &root) == ERR) return ERR;
-  if(root->left != NULL) (root->left = newNode, newNode->parent = root);
-  else if(root->right != NULL) (root->right = newNode, newNode->parent = root);
-  else {return ERR;}
-  return OK;
+Result insertNode(bTreeNode *root, bTreeNode *node) {
+  if(root == NULL || node == NULL) return ERR;
+  if(node->val > root->val) {
+    if(root->right == NULL) {
+      root->right = node;
+      root->right->parent = root;
+      return OK;
+    }
+    return insertNode(root->right, node);
+  }
+  else if (node->val < root->val) {
+    if(root->left == NULL) {
+      root->left = node;
+      root->left->parent = root;
+      return OK;
+    }
+    return insertNode(root->left, node);
+  }
+  return ERR;
 }
 
 Result deleteNode(bTree *tree, int search) {
@@ -146,29 +158,53 @@ Result deleteNode(bTree *tree, int search) {
 }
 
 Result withdrawNode(bTree *tree, int search, bTreeNode **pNode) {
-  bTreeNode *del;
-  if(find(tree, search, &del) == ERR) return ERR;
-  if(del->parent->left == del) {
-    del->parent->left = NULL;
-  } else if(del->parent->right == del) {
-    del->parent->right = NULL;
+  if(tree->root == NULL) return ERR;
+  return withdrawNode(tree->root, search, pNode);
+}
+
+Result withdrawNode(bTreeNode *root, int search, bTreeNode **pNode) {
+  if(find(root, search, pNode) == ERR) return ERR; // Find node to remove and "return" it
+  bTreeNode *dNode = *pNode;
+  bTreeNode *nNode = NULL;
+  // Go to the far right from the left side node to delete
+  if(dNode->left != NULL) {
+    for(nNode = dNode->left; nNode->right != NULL; nNode = nNode->right);
+  } else if(dNode->right != NULL) {
+    for(nNode = dNode->right; nNode->left != NULL; nNode = nNode->left);
   }
-  *pNode = del;
+  // Insert each of the deleted nodes children on their spots in the new node
+  if(nNode != NULL) {
+    nNode->parent->left == nNode ? nNode->parent->left = NULL : nNode->parent->right = NULL; // Remove nNode from its current place
+    insertNode(nNode,dNode->left);
+    insertNode(nNode,dNode->right);
+    dNode->left = NULL;
+    dNode->right = NULL;
+  }
+  // Make the deleted nodes parent point to the new one and return
+  if(dNode->parent != NULL) {
+    if(nNode != NULL) {
+      nNode->parent = dNode->parent;
+      dNode->parent->left == dNode ? dNode->parent->left = nNode : dNode->parent->right = nNode;
+    } else {
+      dNode->parent->left == dNode ? dNode->parent->left = NULL : dNode->parent->right = NULL;
+    }
+    dNode->parent = NULL;
+  }
   return OK;
 }
 
 int depth(bTreeNode *root, bTreeNode *node) {
-  if(root->left != NULL) {
-    if(root->left == node) return 1;
-    int d = depth(root->left, node);
-    if(d != -1) return 1+d;
+  bTreeNode *temp = root;
+  int i;
+  for(i = 0; temp != node; i ++) {
+    if (temp == NULL) return -1;
+    if(node->val > temp->val) {
+      temp = temp->right;
+    } else {
+      temp = temp->left;
+    }
   }
-  if(root->right != NULL) {
-    if(root->right == node) return 1;
-    int d = depth(root->right, node);
-    if(d != -1) return 1+d;
-  } 
-  return -1;
+  return i;
 }
 
 int depth(bTree *tree, bTreeNode *node) {

@@ -250,40 +250,40 @@ Result dequeueTest() {
 Result binaryTreeTest() {
 	printf("Binary tree === PASS\n");
 	bTree *tree = createBTree();
-	addNode(tree, 28);
-	addNode(tree, 28, 15);
-	addNode(tree, 15, 4);
-	addNode(tree, 4, 3);
-	addNode(tree, 4, 12);
-	bTreeNode *node;
-	find(tree, 12, &node);
-	node->right = createBTreeNode(14);
-	addNode(tree, 15, 25);
-	addNode(tree, 25, 20);
-	find(tree, 20, &node);
-	node->right = createBTreeNode(23);
-	addNode(tree, 28, 37);
-	addNode(tree, 37, 32);
-	addNode(tree, 32, 30);
-	addNode(tree, 32, 34);
-	addNode(tree, 37, 46);
+	int list[14] = {28,15,37,4,25,32,46,3,12,20,30,34,14,23};
+	for(int i = 0; i < 14; i ++) {
+ 		addNode(tree, list[i]);
+	}
 	if (VERBOSE) printTree(tree);
 	if (VERBOSE) printTree(tree, PRE_ORDER);
 	if (VERBOSE) printTree(tree, POST_ORDER);
-	if(find(tree, 69, &node) == OK) return ERR;
-	if(find(tree,37, &node) == ERR) return ERR;
+	bTreeNode *node;
+	if (find(tree, 69, &node) == OK) return ERR;
+	if (find(tree, 37, &node) == ERR) return ERR;
 	bTreeNode *node2;
-	if(findParent(tree,46, &node2) == ERR) return ERR;
-	if(node2 != node) return ERR;
-	if(find(tree, 23, &node) == ERR) return ERR;
-	if(depth(tree, node) != 4) return ERR;
-	if(treeHeight(tree) != 4) return ERR;
+	if (findParent(tree,46, &node2) == ERR) return ERR;
+	if (node2 != node) return ERR;
+	if (find(tree, 23, &node) == ERR) return ERR;
+	if (depth(tree, node) != 4) return ERR;
+	if (treeHeight(tree) != 4) return ERR;
 	if (treeSum(tree) != 323) return ERR;
 	bTreePath path = traverseTree(tree);
 	for(int i = 0; i < path.size; i ++) {
 		path.list[i]->val++;
 	}
+	path = traverseTree(tree, PRE_ORDER);
 	if (VERBOSE) printTree(tree, POST_ORDER);
+	for(int i = 0; i < path.size; i ++) {
+		path.list[i]->val--;
+	}
+	if (VERBOSE) printTree(tree);
+	// if (deleteNode(tree, 3) == ERR) return ERR;
+	// if (deleteNode(tree, 12) == ERR) return ERR;
+	// if (deleteNode(tree, 4) == ERR) return ERR;
+	if (deleteNode(tree, 15) == ERR) return ERR;
+	find(tree, 14, &node);
+	if (depth(tree, node) != 1) return ERR;
+	if (VERBOSE) printTree(tree);
 	free(tree);
 	return OK;
 }
