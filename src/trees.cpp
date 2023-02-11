@@ -167,28 +167,30 @@ Result withdrawNode(bTreeNode *root, int search, bTreeNode **pNode) {
   bTreeNode *dNode = *pNode;
   bTreeNode *nNode = NULL;
   // Go to the far right from the left side node to delete
+  // This finds the node to replace the one to delete
+  // Only needed if the delete node has children
   if(dNode->left != NULL) {
     for(nNode = dNode->left; nNode->right != NULL; nNode = nNode->right);
-  } else if(dNode->right != NULL) {
+  } else if(dNode->right != NULL) { // Or the far left from the right
     for(nNode = dNode->right; nNode->left != NULL; nNode = nNode->left);
   }
   // Insert each of the deleted nodes children on their spots in the new node
   if(nNode != NULL) {
     nNode->parent->left == nNode ? nNode->parent->left = NULL : nNode->parent->right = NULL; // Remove nNode from its current place
-    insertNode(nNode,dNode->left);
+    insertNode(nNode,dNode->left); // Put delete nodes children onto the new root
     insertNode(nNode,dNode->right);
-    dNode->left = NULL;
+    dNode->left = NULL; // Avoid circular shit if dNode is free'd
     dNode->right = NULL;
   }
   // Make the deleted nodes parent point to the new one and return
   if(dNode->parent != NULL) {
     if(nNode != NULL) {
-      nNode->parent = dNode->parent;
-      dNode->parent->left == dNode ? dNode->parent->left = nNode : dNode->parent->right = nNode;
+      nNode->parent = dNode->parent; // New nodes parent pointer points to delete nodes parent
+      dNode->parent->left == dNode ? dNode->parent->left = nNode : dNode->parent->right = nNode; // Delete nodes parent now points to new node
     } else {
-      dNode->parent->left == dNode ? dNode->parent->left = NULL : dNode->parent->right = NULL;
+      dNode->parent->left == dNode ? dNode->parent->left = NULL : dNode->parent->right = NULL; // Remove delete node from its parent
     }
-    dNode->parent = NULL;
+    dNode->parent = NULL; // Fully remove delete node from the tree
   }
   return OK;
 }
