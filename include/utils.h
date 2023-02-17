@@ -5,3 +5,4 @@ typedef enum { ERR, OK } Result;
 #define VERBOSE true
 
 void panic(const char *message);
+int max(int a, int b);

@@ -1,4 +1,5 @@
 #include "trees.h"
+#include "avltrees.h"
 #include "utils.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -162,7 +163,7 @@ Result withdrawNode(bTree *tree, int search, bTreeNode **pNode) {
   return withdrawNode(tree->root, search, pNode);
 }
 
-Result withdrawNode(bTreeNode *root, int search, bTreeNode **pNode) {
+Result withdrawNode(bTreeNode *root, int search, bTreeNode **pNode) { // Cant remove the root
   if(find(root, search, pNode) == ERR) return ERR; // Find node to remove and "return" it
   bTreeNode *dNode = *pNode;
   bTreeNode *nNode = NULL;
@@ -230,8 +231,10 @@ void printTree(bTree *tree) {
 }
 
 void printTree(bTree *tree, bTreeOrder order) {
-  bTreePath path = traverseTree(tree, order);
-  for(int i = 0; i < path.size; i ++) {
+  printTreePath(traverseTree(tree, order));
+}
+void printTreePath(bTreePath path) {
+    for(int i = 0; i < path.size; i ++) {
     printf("%i", path.list[i]->val);
     if(i+1 < path.size) {
       printf(", ");
@@ -246,25 +249,25 @@ bTreePath traverseTree(bTree *tree) {
 
 bTreePath traverseTreeInOrder(bTreeNode *root) {
   if (root == NULL) {return createBTreePath();}
-  bTreePath p1 = traverseTreeInOrder(root->left);
-  bTreePath p2 = createBTreePath(root);
-  bTreePath p3 = traverseTreeInOrder(root->right);
+  bTreePath p1 = traverseTreeInOrder((bTreeNode*)(root->left));
+  bTreePath p2 = createBTreePath((bTreeNode*)(root));
+  bTreePath p3 = traverseTreeInOrder((bTreeNode*)(root->right));
   return merge(p1,p2,p3);
 }
 
 bTreePath traverseTreePreOrder(bTreeNode *root) {
   if (root == NULL) {return createBTreePath();}
-  bTreePath p1 = createBTreePath(root);
-  bTreePath p2 = traverseTreePreOrder(root->left);
-  bTreePath p3 = traverseTreePreOrder(root->right);
+  bTreePath p1 = createBTreePath((bTreeNode*)(root));
+  bTreePath p2 = traverseTreePreOrder((bTreeNode*)(root->left));
+  bTreePath p3 = traverseTreePreOrder((bTreeNode*)(root->right));
   return merge(p1,p2,p3);
 }
 
 bTreePath traverseTreePostOrder(bTreeNode *root) {
   if (root == NULL) {return createBTreePath();}
-  bTreePath p1 = traverseTreePostOrder(root->left);
-  bTreePath p2 = traverseTreePostOrder(root->right);
-  bTreePath p3 = createBTreePath(root);
+  bTreePath p1 = traverseTreePostOrder((bTreeNode*)(root->left));
+  bTreePath p2 = traverseTreePostOrder((bTreeNode*)(root->right));
+  bTreePath p3 = createBTreePath((bTreeNode*)(root));
   return merge(p1, p2, p3);
 }
 
@@ -272,13 +275,13 @@ bTreePath traverseTree(bTree *tree, bTreeOrder order) {
   bTreePath path;
   switch (order) {
     case IN_ORDER:
-      path = traverseTreeInOrder(tree->root);
+      path = traverseTreeInOrder((bTreeNode*)(tree->root));
       break;
     case PRE_ORDER:
-      path = traverseTreePreOrder(tree->root);
+      path = traverseTreePreOrder((bTreeNode*)(tree->root));
       break;
     case POST_ORDER:
-      path = traverseTreePostOrder(tree->root);
+      path = traverseTreePostOrder((bTreeNode*)(tree->root));
       break;
     default:
       panic("Wrong bTreeOrder");

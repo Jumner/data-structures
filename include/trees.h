@@ -49,6 +49,7 @@ int treeHeight(bTree *tree); // Return tree's height
 int treeHeight(bTreeNode *root);
 void printTree(bTree *tree); // Print tree using in order
 void printTree(bTree *tree, bTreeOrder order); // Print tree using specified order
+void printTreePath(bTreePath path);
 bTreePath traverseTree(bTree *tree); // Return array in order of traveral using in order
 bTreePath traverseTree(bTree *tree, bTreeOrder order); // Return array in order of traveral
 bTreePath merge(bTreePath p1, bTreePath p2);
