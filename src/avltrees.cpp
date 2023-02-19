@@ -40,19 +40,19 @@ Result find(avlNode *root, int val, avlNode **pNode) {
   return find((bTreeNode*)root, val, (bTreeNode**)pNode);
 }
 
-Result rotate(avlNode *root, Rotation rotation) {
+Result rotate(avlNode **pRoot, Rotation rotation) {
   switch (rotation) {
     case R:
-    return rotateR(root);
+    return rotateR(pRoot);
     break;
     case L:
-    return rotateL(root);
+    return rotateL(pRoot);
     break;
     case LLR:
-    return rotateLLR(root);
+    return rotateLLR(pRoot);
     break;
     case RRL:
-    return rotateRRL(root);
+    return rotateRRL(pRoot);
     break;
     default:
     panic("Wrong rotation");
@@ -60,15 +60,15 @@ Result rotate(avlNode *root, Rotation rotation) {
   return ERR;
 }
 
-Result rotateR(avlNode *root) {
+Result rotateR(avlNode **pRoot) {
+  if(pRoot == NULL) return ERR;
+  avlNode *root = *pRoot;
   if(root == NULL) return ERR;
   avlNode *newRoot = root->left;
   if(newRoot == NULL) return ERR;
 
-  // int lh,rh;
-  // lh = root->left != NULL ? root->left->height : 0;
-  // rh = root->right != NULL ? root->right->height : 0;
   root->left = newRoot->right;
+  if(newRoot->right != NULL) newRoot->right->parent = root;
   newRoot->right = root;
   newRoot->parent = root->parent;
   root->parent = newRoot;
@@ -76,15 +76,21 @@ Result rotateR(avlNode *root) {
   // Update heights
   root->height = max(root->height, root->left!=NULL?root->left->height+1:1);
   newRoot->height = max(newRoot->left!=NULL?newRoot->left->height+1:1,newRoot->right!=NULL?newRoot->right->height+1:1);
+
+  // Update root
+  *pRoot = newRoot;
   return OK;
 }
 
-Result rotateL(avlNode *root) {
+Result rotateL(avlNode **pRoot) {
+  if(pRoot == NULL) return ERR;
+  avlNode *root = *pRoot;
   if(root == NULL) return ERR;
   avlNode *newRoot = root->right;
   if(newRoot == NULL) return ERR;
 
   root->right = newRoot->left;
+  if(newRoot->left != NULL) newRoot->left->parent = root;
   newRoot->left = root;
   newRoot->parent = root->parent;
   root->parent = newRoot;
@@ -92,24 +98,31 @@ Result rotateL(avlNode *root) {
   // Update heights
   root->height = max(root->height, root->right!=NULL?root->right->height+1:1);
   newRoot->height = max(newRoot->left!=NULL?newRoot->left->height+1:1,newRoot->right!=NULL?newRoot->right->height+1:1);
+
+  // Update root
+  *pRoot = newRoot;
   return OK;
 }
 
-Result rotateLLR(avlNode *root) {
+Result rotateLLR(avlNode **pRoot) {
+  if(pRoot == NULL) return ERR;
+  avlNode *root = *pRoot;
   if(root == NULL) return ERR;
   avlNode *leftChild = root->left;
   if(leftChild == NULL) return ERR;
-  rotateL(leftChild); // Left rotate left child
-  rotateR(root); // Right rotate
+  rotate(&root->left, L); // Left rotate left child
+  rotate(pRoot, R); // Right rotate
   return OK;
 }
 
-Result rotateRRL(avlNode *root) {
+Result rotateRRL(avlNode **pRoot) {
+  if(pRoot == NULL) return ERR;
+  avlNode *root = *pRoot;
   if(root == NULL) return ERR;
   avlNode *rightChild = root->right;
   if(rightChild == NULL) return ERR;
-  rotateR(rightChild); // Right rotate right child
-  rotateL(root); // Left rotate
+  rotate(&root->right, R); // Right rotate right child
+  rotate(pRoot, L); // Left rotate
   return OK;
 }
 
@@ -131,21 +144,23 @@ Result insertNode(avlNode **pRoot, avlNode *node) {
 
   avlNode *ancestor = NULL;
   while(root != NULL) {
+    if(balance(root) != Neutral) {
+      ancestor = root;
+    }
     if(node->val > root->val) {
       if(root->right == NULL) { // Insert here
         root->right = node;
+        node->parent = root;
         break;
       }
       root = root->right;
     } else {
       if(root->left == NULL) { // Insert here
         root->left = node;
+        node->parent = root;
         break;
       }
       root = root->left;
-    }
-    if(balance(root) != Neutral) {
-      ancestor = root;
     }
   }
   root->height = max(root->height, node->height+1);
@@ -158,49 +173,58 @@ Result insertNode(avlNode **pRoot, avlNode *node) {
   if((bf == RHeavy && node->val < ancestor->val) || (bf == LHeavy && node->val > ancestor->val)) return OK; // Insert potentially bfs tree
   if(bf == TooRHeavy) { // Too right heavy
     if(balance(ancestor->right) == LHeavy) {
-      rotateRRL(ancestor);
+      if(ancestor == *pRoot) rotate(pRoot, RRL);
+      else rotate(&ancestor, RRL);
     } else {
-      rotateL(ancestor);
+      if(ancestor == *pRoot) rotate(pRoot, L);
+      else rotate(&ancestor, L);
     }
   }  else if (bf == TooLHeavy) {// Too left heavy
     if(balance(ancestor->left) == RHeavy) {
-      rotateLLR(ancestor);
+      if(ancestor == *pRoot) rotate(pRoot, LLR);
+      else rotate(&ancestor, LLR);
     } else {
-      rotateR(ancestor);
+      if(ancestor == *pRoot) rotate(pRoot, R);
+      else rotate(&ancestor, R);
     }
   }
   return OK;
 }
 Result deleteNode(avlTree *tree, int search) {
   avlNode *dNode;
-  if (withdrawNode(tree, search, &dNode) == ERR) return ERR;;
-  free(dNode);
+  if (withdrawNode(tree, search, &dNode) == ERR) return ERR;
+  // free(dNode);
   return OK;
 }
 Result withdrawNode(avlTree *tree, int search, avlNode **pNode) {
   if (tree->root == NULL) return ERR;
   return withdrawNode(&(tree->root), search, pNode);
+  return OK;
 }
 Result withdrawNode(avlNode **pRoot, int search, avlNode **pNode) {
-  if(pRoot == NULL || *pRoot == NULL || pNode == NULL) return ERR;
+  if(pRoot == NULL || *pRoot == NULL || pNode == NULL || *pNode == NULL) return ERR;
   // First, remove the element, we can fix it later
   avlNode *dNode;
-  withdrawNode((bTreeNode*)pRoot, search, (bTreeNode**)pNode);
+  withdrawNode((bTreeNode*)(*pRoot), search, (bTreeNode**)pNode); // WARNING cannot delete root node
   avlNode *root = *pRoot;
   while(root != NULL) {
     Balance bf = balance(root);
     if(bf == TooRHeavy) {
       if (balance(root->right) == LHeavy) {
-        rotateRRL(root);
+        if(root == *pRoot) rotate(pRoot, RRL);
+        else rotate(&root, RRL);
       } else {
-        rotateL(root);
+        if(root == *pRoot) rotate(pRoot, L);
+        else rotate(&root, L);
       }
       break;
     } else if (bf == TooLHeavy) {
       if (balance(root->left) == RHeavy) {
-        rotateLLR(root);
+        if(root == *pRoot) rotate(pRoot, LLR);
+        else rotate(&root, LLR);
       } else {
-        rotateR(root);
+        if(root == *pRoot) rotate(pRoot, R);
+        else rotate(&root, R);
       }
       break;
     }

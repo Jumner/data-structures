@@ -29,15 +29,15 @@ void free(avlTree *tree);
 Result find(avlTree *tree, int val, avlNode **pNode); // Return node by ref
 Result find(avlNode *root, int val, avlNode **pNode);
 Result rotate(avlNode *root, Rotation rotation);
-Result rotateR(avlNode *root);
-Result rotateL(avlNode *root);
-Result rotateLLR(avlNode *root);
-Result rotateRRL(avlNode *root);
+Result rotateR(avlNode **pRoot);
+Result rotateL(avlNode **pRoot);
+Result rotateLLR(avlNode **pRoot);
+Result rotateRRL(avlNode **pRoot);
 Result addNode(avlTree *tree, int val); // Insert into tree
 Result insertNode(avlNode **pRoot, avlNode *node);
 Result insertNode(avlTree *tree, avlNode *node);
 Result deleteNode(avlTree *tree, int search);  // Delete a node
-Result withdrawNode(avlNode **root, int search, avlNode **pNode);
+Result withdrawNode(avlNode **pRoot, int search, avlNode **pNode);
 Result withdrawNode(avlTree *tree, int search, avlNode **pNode); // Pass pointer by reference
 int height(avlNode *node);
 Balance balance(avlNode *node);

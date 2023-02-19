@@ -13,5 +13,6 @@ Result linkedQueueTest();
 Result queueTest();
 Result dequeueTest();
 Result binaryTreeTest();
+Result avlTreeTest();
 
 Result fullTest();

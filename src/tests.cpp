@@ -8,6 +8,7 @@
 #include "queue.h"
 #include "dequeue.h"
 #include "trees.h"
+#include "avltrees.h"
 #include "algorithms.h"
 // Tests
 Result linkedListBinarySearchTest() {
@@ -248,7 +249,6 @@ Result dequeueTest() {
 }
 
 Result binaryTreeTest() {
-	printf("Binary tree === PASS\n");
 	bTree *tree = createBTree();
 	int list[14] = {28,15,37,4,25,32,46,3,12,20,30,34,14,23};
 	for(int i = 0; i < 14; i ++) {
@@ -285,6 +285,36 @@ Result binaryTreeTest() {
 	if (depth(tree, node) != 1) return ERR;
 	if (VERBOSE) printTree(tree);
 	free(tree);
+	printf("Binary tree === PASS\n");
+	return OK;
+}
+
+void treePrint(avlNode *root) {
+	if(root == NULL) return;
+	printf("%i {", root->val);
+	treePrint(root->left);
+	printf("} {");
+	treePrint(root->right);
+	printf("}");
+}
+void treePrint(avlTree *tree) {treePrint(tree->root);printf("\n");}
+
+Result avlTreeTest() {
+	avlTree *tree = createAvlTree();
+	int list[6] = {1,2,5,6,4,3};
+	for(int i = 0; i < 6; i ++) {
+		if(addNode(tree, list[i]) == ERR) return ERR;
+	}
+	if(tree->root->val != 4) {
+		if (VERBOSE) printf("Wrong root\n");
+		return ERR;
+	}
+	if (VERBOSE) printTree(tree, PRE_ORDER);
+	deleteNode(tree, 2);
+	deleteNode(tree, 1);
+	deleteNode(tree, 3);
+	treePrint(tree);
+	printf("AVL tree === PASS\n");
 	return OK;
 }
 
@@ -301,5 +331,7 @@ Result fullTest() {
 	if (dequeueTest() == ERR) return ERR;
 	printf("\n");
 	if (binaryTreeTest() == ERR) return ERR;
+	printf("\n");
+	if (avlTreeTest() == ERR) return ERR;
 	return OK;
 }
