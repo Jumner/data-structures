@@ -9,6 +9,7 @@
 #include "dequeue.h"
 #include "trees.h"
 #include "avltrees.h"
+#include "hash.h"
 #include "algorithms.h"
 // Tests
 Result linkedListBinarySearchTest() {
@@ -318,6 +319,43 @@ Result avlTreeTest() {
 	return OK;
 }
 
+Result hashTest(HashTableType type) {
+	HashTable *table = createHashTable(100, type);
+	if(insert(table, 1) == ERR) {
+		printf("Hash insert failed\n");
+		return ERR;
+	}
+	if(insert(table, 3) == ERR) {
+		printf("Hash insert failed\n");
+		return ERR;
+	}
+	if(insert(table, 5) == ERR) {
+		printf("Hash insert failed\n");
+		return ERR;
+	}
+	if(VERBOSE) print(table);
+	if(insert(table, collision(5, table->size)) == ERR) {
+		printf("Cant insert duplicate\n");
+		return ERR;
+	}
+	if(VERBOSE) print(table);
+	if(remove(table, 3) == ERR) {
+		printf("Hash remove failed\n");
+		return ERR;
+	}
+	if(VERBOSE) print(table);
+	if(search(table, 3) != NULL) {
+		printf("Item is deleted\n");
+		return ERR;
+	}
+	if(remove(table, 69) == OK) {
+		if(VERBOSE) printf("Removed element that doesnt exist\n");
+		return ERR;
+	}
+	printf("Hash === PASS\n");
+	return OK;
+}
+
 Result fullTest() {
 	printf("Running test suite\n-==-===-!==-===-==-\n\n");
 	if (linkedListTest() == ERR) return ERR;
@@ -333,5 +371,10 @@ Result fullTest() {
 	if (binaryTreeTest() == ERR) return ERR;
 	printf("\n");
 	if (avlTreeTest() == ERR) return ERR;
+	printf("\n");
+	if (hashTest(OPEN) == ERR) return ERR;
+	if (hashTest(CHAIN) == ERR) return ERR;
+	if (hashTest(SCATTER) == ERR) return ERR;
+	printf("\n");
 	return OK;
 }
