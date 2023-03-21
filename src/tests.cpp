@@ -10,6 +10,7 @@
 #include "trees.h"
 #include "avltrees.h"
 #include "hash.h"
+#include "heap.h"
 #include "algorithms.h"
 // Tests
 Result linkedListBinarySearchTest() {
@@ -356,6 +357,24 @@ Result hashTest(HashTableType type) {
 	return OK;
 }
 
+Result heapTest() {
+	int arr[10] = {10,12,9,78,33,21,35,29,5,8};
+	Heap *heap = heapify(arr, 10, 12);
+	print(heap);
+	if(insert(heap, 69) == ERR) return ERR;
+	if(insert(heap, 420) == ERR) return ERR;
+	if(insert(heap, 69420) == OK) return OK;
+	print(heap);
+	int i;
+	if(remove(heap, &i) == ERR) return ERR;
+	if(i != 420) return ERR;
+	if(!includes(heap, 69)) return ERR;
+	if(includes(heap, 123)) return ERR;
+	print(heap);
+	printf("Heap === PASS\n");
+	return OK;
+}
+
 Result fullTest() {
 	printf("Running test suite\n-==-===-!==-===-==-\n\n");
 	if (linkedListTest() == ERR) return ERR;
@@ -375,6 +394,8 @@ Result fullTest() {
 	if (hashTest(OPEN) == ERR) return ERR;
 	if (hashTest(CHAIN) == ERR) return ERR;
 	if (hashTest(SCATTER) == ERR) return ERR;
+	printf("\n");
+	if (heapTest() == ERR) return ERR;
 	printf("\n");
 	return OK;
 }

@@ -15,5 +15,6 @@ Result dequeueTest();
 Result binaryTreeTest();
 Result avlTreeTest();
 Result hashTest();
+Result heapTest();
 
 Result fullTest();
